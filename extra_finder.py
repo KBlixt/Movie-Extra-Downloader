@@ -6,6 +6,7 @@ import url_finders
 from bisect import bisect
 from datetime import date
 import time
+import shutil
 
 
 class ExtraFinder:
@@ -392,16 +393,16 @@ class ExtraFinder:
         else:
             self.youtube_videos = sorted(self.youtube_videos, key=lambda x: x[key])
 
-        prefered_videos = list()
-        not_prefered_channels = list()
+        preferred_videos = list()
+        not_preferred_channels = list()
 
         for youtube_video in self.youtube_videos:
-            if youtube_video['uploader'] in self.config.prefered_channels:
-                prefered_videos.append(youtube_video)
+            if youtube_video['uploader'] in self.config.preferred_channels:
+                preferred_videos.append(youtube_video)
             else:
-                not_prefered_channels.append(youtube_video)
+                not_preferred_channels.append(youtube_video)
 
-        self.youtube_videos = prefered_videos + not_prefered_channels
+        self.youtube_videos = preferred_videos + not_preferred_channels
 
     def download_videos(self, tmp_file):
 
@@ -435,3 +436,86 @@ class ExtraFinder:
                     time.sleep(3)
 
         return downloaded_videos_meta
+
+    def move_videos(self, downloaded_videos_meta, tmp_folder):
+
+        def copy_file():
+            if not os.path.isdir(os.path.split(target_path)[0]):
+                os.mkdir(os.path.split(target_path)[0])
+            shutil.move(source_path, target_path)
+
+        def record_file():
+            vid_id = 'unknown'
+            for meta in downloaded_videos_meta:
+                if meta['title'] + '.' + meta['ext'] == file:
+                    vid_id = meta['id']
+                    break
+
+            self.directory.record.append(
+                {'hash': file_hash,
+                 'file_path': os.path.join(self.directory.full_path, self.config.extra_type, file),
+                 'file_name': file,
+                 'youtube_video_id': vid_id,
+                 'config_type': self.config.extra_type})
+
+        def determine_case():
+            for content_file, content_file_hash in self.directory.content.items():
+                if content_file == file:
+                    return 'name_in_directory'
+
+                if file_hash == content_file_hash:
+                    return 'hash_in_directory'
+
+            for sub_content in self.directory.subdirectories.values():
+                for content_file, content_file_hash in sub_content.items():
+                    if content_file == file:
+                        return 'name_in_directory'
+                    if file_hash == content_file_hash:
+                        return 'hash_in_directory'
+
+            return ''
+
+        def handle_name_in_directory():
+            if self.config.force:
+                copy_file()
+                record_file()
+                self.directory.subdirectories[self.config.extra_type][file] = file_hash
+            else:
+                os.remove(source_path)
+
+        def handle_hash_in_directory():
+            if self.config.force:
+                copy_file()
+                record_file()
+                if self.config.extra_type in self.directory.subdirectories:
+                    self.directory.subdirectories[self.config.extra_type] = {file: file_hash}
+                else:
+                    self.directory.subdirectories = {self.config.extra_type: {file: file_hash}}
+            else:
+                os.remove(source_path)
+
+        for file in os.listdir(tmp_folder):
+            source_path = os.path.join(tmp_folder, file)
+            target_path = os.path.join(self.directory.full_path, self.config.extra_type, file)
+
+            file_hash = tools.hash_file(source_path)
+
+            if any(file_hash == record['hash'] for record in self.directory.record):
+                os.remove(source_path)
+                continue
+
+            case = determine_case()
+
+            if case == 'name_in_directory':
+                handle_name_in_directory()
+            elif case == 'hash_in_directory':
+                handle_hash_in_directory()
+            else:
+                copy_file()
+
+                if self.config.extra_type in self.directory.subdirectories:
+                    self.directory.subdirectories[self.config.extra_type][file] = file_hash
+                else:
+                    self.directory.subdirectories = {self.config.extra_type: {file: file_hash}}
+
+                record_file()

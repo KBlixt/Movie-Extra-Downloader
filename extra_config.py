@@ -13,30 +13,6 @@ class ExtraSettings:
 
     def __init__(self, config_path):
 
-        ########################################
-        self.config = None
-
-        self.config_id = None
-        self.extra_type = None
-        self.force = None
-
-        self.searches = None
-
-        self.required_phrases = None
-        self.banned_phrases = None
-        self.banned_channels = None
-
-        self.break_limit = None
-        self.custom_filters = None
-        self.last_resort_policy = None
-
-        self.priority_order = None
-        self.prefered_channels = list()
-
-        self.videos_to_download = None
-        self.naming_scheme = None
-        ########################################
-
         with codecs.open(config_path, 'r', 'utf-8') as file:
             self.config = configparser.RawConfigParser()
             self.config.read_file(file)
@@ -58,12 +34,15 @@ class ExtraSettings:
         self.last_resort_policy = self.config['DOWNLOADING_AND_POSTPROCESSING'].get('last_resort_policy')
 
         self.priority_order = self.config['PRIORITY_RULES'].get('order')
-        self.prefered_channels = \
-            tools.make_list_from_string(self.config['PRIORITY_RULES'].get('prefered_channels').replace('\n', ''))
+        self.preferred_channels = \
+            tools.make_list_from_string(self.config['PRIORITY_RULES'].get('preferred_channels').replace('\n', ''))
 
         self.videos_to_download = self.config['DOWNLOADING_AND_POSTPROCESSING'].getint('videos_to_download')
         self.naming_scheme = self.config['DOWNLOADING_AND_POSTPROCESSING'].get('naming_scheme')
         self.youtube_dl_arguments = json.loads(self.config['DOWNLOADING_AND_POSTPROCESSING'].get('youtube_dl_arguments'))
+
+        self.disable_play_trailers = self.config['EXTRA_CONFIG'].get('disable_play_trailers', False)
+        self.only_play_trailers = self.config['EXTRA_CONFIG'].get('only_play_trailers', False)
         return
 
         # Trailer specific:

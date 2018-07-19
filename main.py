@@ -1,5 +1,4 @@
 import os
-import shutil
 import sys
 from _socket import timeout
 
@@ -9,7 +8,6 @@ from extra_config import ExtraSettings
 import configparser
 import re
 from urllib.error import URLError
-import tools
 
 
 def download_extra(directory, config, tmp_folder):
@@ -32,13 +30,19 @@ def download_extra(directory, config, tmp_folder):
         finder.apply_custom_filters()
         finder.order_results()
 
-        if finder.play_trailers:
+        if finder.play_trailers and not config.disable_play_trailers:
             if 'duration' in finder.youtube_videos[0] and 'duration' in finder.play_trailers[0]:
                 if finder.youtube_videos[0]['duration'] - 23 <= \
                         finder.play_trailers[0]['duration'] <= \
                         finder.youtube_videos[0]['duration'] + 5:
                     finder.youtube_videos = [finder.play_trailers[0]] + finder.youtube_videos
                     print('picked play trailer.')
+
+        if config.only_play_trailers:
+            if finder.play_trailers:
+                finder.youtube_videos = [finder.play_trailers[0]]
+            else:
+                return
 
         for youtube_video in finder.youtube_videos:
             print(youtube_video['webpage_url'] + ' : ' +
@@ -62,92 +66,9 @@ def download_extra(directory, config, tmp_folder):
                 os.mkdir(tmp_folder)
 
         downloaded_videos_meta = finder.download_videos(tmp_folder)
-########################################################################################################################
 
-        def copy_file():
-            if not os.path.isdir(os.path.split(target_path)[0]):
-                os.mkdir(os.path.split(target_path)[0])
-            shutil.move(source_path, target_path)
+        finder.move_videos(downloaded_videos_meta, tmp_folder)
 
-        def record_file():
-            vid_id = 'unknown'
-            for meta in downloaded_videos_meta:
-                if meta['title'] + '.' + meta['ext'] == file:
-                    vid_id = meta['id']
-                    break
-
-            directory.record.append(
-                {'hash': file_hash,
-                 'file_path': os.path.join(directory.full_path, config.extra_type, file),
-                 'file_name': file,
-                 'youtube_video_id': vid_id,
-                 'config_type': config.extra_type})
-
-        def determine_case():
-            for content_file, content_file_hash in directory.content.items():
-                if content_file == file:
-                    return 'name_in_directory'
-
-                if file_hash == content_file_hash:
-                    return 'hash_in_directory'
-
-            for sub_content in directory.subdirectories.values():
-                for content_file, content_file_hash in sub_content.items():
-                    if content_file == file:
-                        return 'name_in_directory'
-                    if file_hash == content_file_hash:
-                        return 'hash_in_directory'
-
-            return ''
-
-        def handle_name_in_directory():
-            print('1')
-            if force:
-                copy_file()
-                record_file()
-                directory.subdirectories[config.extra_type][file] = file_hash
-            else:
-                os.remove(source_path)
-
-        def handle_hash_in_directory():
-            print('2')
-            if force:
-                copy_file()
-                record_file()
-                if config.extra_type in directory.subdirectories:
-                    directory.subdirectories[config.extra_type] = {file: file_hash}
-                else:
-                    directory.subdirectories = {config.extra_type: {file: file_hash}}
-            else:
-                os.remove(source_path)
-
-        for file in os.listdir(tmp_folder):
-            source_path = os.path.join(tmp_folder, file)
-            target_path = os.path.join(directory.full_path, config.extra_type, file)
-
-            file_hash = tools.hash_file(source_path)
-
-            if any(file_hash == record['hash'] for record in directory.record):
-                os.remove(source_path)
-                continue
-
-            case = determine_case()
-
-            if case == 'name_in_directory':
-                handle_name_in_directory()
-            elif case == 'hash_in_directory':
-                handle_hash_in_directory()
-            else:
-                copy_file()
-
-                if config.extra_type in directory.subdirectories:
-                    directory.subdirectories[config.extra_type][file] = file_hash
-                else:
-                    directory.subdirectories = {config.extra_type: {file: file_hash}}
-
-                record_file()
-
-########################################################################################################################
         directory.completed_configs.append(config.config_id)
         directory.save_directory(records)
 
@@ -194,88 +115,10 @@ def download_extra(directory, config, tmp_folder):
             except FileNotFoundError:
                 os.mkdir(tmp_folder)
 
-        finder.download_videos(tmp_folder)
+        downloaded_videos_meta = finder.download_videos(tmp_folder)
 
-########################################################################################################################
+        finder.move_videos(downloaded_videos_meta, tmp_folder)
 
-        def copy_file():
-            if not os.path.isdir(os.path.split(target_path)[0]):
-                os.mkdir(os.path.split(target_path)[0])
-            shutil.move(source_path, target_path)
-
-        def record_file():
-            directory.record.append(
-                {'hash': file_hash,
-                 'file_path': os.path.join(directory.full_path, config.extra_type, file),
-                 'file_name': file,
-                 'youtube_video_id': 0,
-                 'config_type': config.extra_type})
-
-        def determine_case():
-            for content_file, content_file_hash in directory.content.items():
-                if content_file == file:
-                    return 'name_in_directory'
-
-                if file_hash == content_file_hash:
-                    return 'hash_in_directory'
-
-            for sub_content in directory.subdirectories.values():
-                for content_file, content_file_hash in sub_content.items():
-                    if content_file == file:
-                        return 'name_in_directory'
-                    if file_hash == content_file_hash:
-                        return 'hash_in_directory'
-
-            return ''
-
-        def handle_name_in_directory():
-            print('1')
-            if force:
-                copy_file()
-                record_file()
-                directory.subdirectories[config.extra_type][file] = file_hash
-            else:
-                os.remove(source_path)
-
-        def handle_hash_in_directory():
-            print('2')
-            if force:
-                copy_file()
-                record_file()
-                if config.extra_type in directory.subdirectories:
-                    directory.subdirectories[config.extra_type] = {file: file_hash}
-                else:
-                    directory.subdirectories = {config.extra_type: {file: file_hash}}
-            else:
-                os.remove(source_path)
-
-        for file in os.listdir(tmp_folder):
-            source_path = os.path.join(tmp_folder, file)
-            target_path = os.path.join(directory.full_path, config.extra_type, file)
-
-            file_hash = tools.hash_file(source_path)
-
-            if any(file_hash == record['hash'] for record in directory.record):
-                os.remove(source_path)
-                continue
-
-            case = determine_case()
-
-            if case == 'name_in_directory':
-                handle_name_in_directory()
-            elif case == 'hash_in_directory':
-                handle_hash_in_directory()
-            else:
-                copy_file()
-
-                if config.extra_type in directory.subdirectories:
-                    directory.subdirectories[config.extra_type][file] = file_hash
-                else:
-                    directory.subdirectories[config.extra_type] = {file: file_hash}
-
-                record_file()
-
-########################################################################################################################
         directory.completed_configs.append(config.config_id)
         directory.save_directory(records)
 
@@ -303,7 +146,7 @@ library2 = 'testdir'
 c = configparser.ConfigParser()
 c.read('default_config.cfg')
 
-tmp_folder = os.path.join(os.path.dirname(sys.argv[0]), 'tmp')
+tmp_folder = os.path.join(os.path.dirname(sys.argv[0]), 'tmp', 'tmp_0')
 
 library = library2
 library_content = os.listdir(library)
@@ -313,12 +156,14 @@ configs_content = os.listdir(configs)
 
 records = os.path.join(os.path.dirname(sys.argv[0]), 'records')
 
-force = False
+force = True
 
 for folder in library_content:
     if re.match("^\\(.*\\)$", folder) or re.match("^\\..*", folder):
         continue
     for config in configs_content:
+        if config.startswith('.'):
+            continue
         try:
             try:
                 directory = Directory.load_directory(os.path.join(records, folder))
@@ -332,6 +177,7 @@ for folder in library_content:
             if force:
                 old_record = directory.record
                 directory.record = list()
+                extra_config.force = True
 
             download_extra(directory, extra_config, tmp_folder)
 
