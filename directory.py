@@ -252,5 +252,7 @@ class Directory(object):
     def save_directory(self, save_path):
         self.content = None
         self.subdirectories = None
+        if not os.path.isdir(save_path):
+            os.mkdir(os.path.join(save_path))
         with open(os.path.join(save_path, self.name), 'w') as save_file:
             json.dump(self.__dict__, save_file)

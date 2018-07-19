@@ -18,14 +18,15 @@ def download_extra(directory, config, tmp_folder):
         finder.search()
         finder.filter_search_result()
 
-        # for youtube_video in finder.youtube_videos:
-        #     print('--------------------------------------------------------------------------------------')
-        #     print(youtube_video['webpage_url'])
-        #     print(str(youtube_video['adjusted_rating']))
-        #     print(youtube_video['format'])
-        #     print(str(youtube_video['views_per_day']))
-        # print('--------------------------------------------------------------------------------------')
-        # print(folder)
+        for youtube_video in finder.youtube_videos:
+            print('--------------------------------------------------------------------------------------')
+            print(youtube_video['webpage_url'])
+            print(str(youtube_video['adjusted_rating']))
+            print(youtube_video['format'])
+            print(str(youtube_video['views_per_day']))
+            print(str(youtube_video['requested_formats'][0]['tbr']))
+        print('--------------------------------------------------------------------------------------')
+        print(folder)
 
         finder.apply_custom_filters()
         finder.order_results()
@@ -43,6 +44,8 @@ def download_extra(directory, config, tmp_folder):
                 finder.youtube_videos = [finder.play_trailers[0]]
             else:
                 return
+        if not finder.youtube_videos and finder.play_trailers and not config.disable_play_trailers:
+            finder.youtube_videos = [finder.play_trailers]
 
         for youtube_video in finder.youtube_videos:
             print(youtube_video['webpage_url'] + ' : ' +
@@ -71,8 +74,6 @@ def download_extra(directory, config, tmp_folder):
 
         directory.completed_configs.append(config.config_id)
         directory.save_directory(records)
-
-        # todo: pick play trailer if it's same length as number one ((+5)-(-20)sec)
 
     def process_interviews_config():
         pass
@@ -156,7 +157,7 @@ configs_content = os.listdir(configs)
 
 records = os.path.join(os.path.dirname(sys.argv[0]), 'records')
 
-force = True
+force = False
 
 for folder in library_content:
     if re.match("^\\(.*\\)$", folder) or re.match("^\\..*", folder):
@@ -186,7 +187,7 @@ for folder in library_content:
                 pass
 
         except FileNotFoundError as e:
-            print('file not found: ' + e.args[0])
+            print('file not found: ' + str(e.args[0]))
             continue
 
         except URLError:
