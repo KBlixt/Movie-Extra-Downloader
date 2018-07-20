@@ -108,7 +108,8 @@ class ExtraFinder:
             if not any(url in youtube_video['webpage_url']
                        or youtube_video['webpage_url'] in url
                        for youtube_video in self.youtube_videos):
-
+                if 'youtube.com/watch?v=' not in url:
+                    continue
                 video = create_youtube_video()
 
                 if video:
@@ -428,8 +429,10 @@ class ExtraFinder:
                         downloaded_videos_meta.append(meta)
                         break
 
-                except DownloadError:
+                except DownloadError as e:
                     if tries > 3:
+                        if str(e).startswith('ERROR: Did not get any data blocks'):
+                            return
                         print('failed to download the video.')
                         raise
                     print('failed to download the video. retrying')

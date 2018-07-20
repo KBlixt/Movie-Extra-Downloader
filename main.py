@@ -69,8 +69,8 @@ def download_extra(directory, config, tmp_folder):
                 os.mkdir(tmp_folder)
 
         downloaded_videos_meta = finder.download_videos(tmp_folder)
-
-        finder.move_videos(downloaded_videos_meta, tmp_folder)
+        if downloaded_videos_meta:
+            finder.move_videos(downloaded_videos_meta, tmp_folder)
 
         directory.completed_configs.append(config.config_id)
         directory.save_directory(records)
@@ -141,7 +141,7 @@ def download_extra(directory, config, tmp_folder):
         process_deleted_scenes_config()
 
 
-library1 = '\\\BULBASAUR\Plex library\Filmer'
+library1 = '/storage/plex/library/Filmer'
 library2 = 'testdir'
 
 c = configparser.ConfigParser()
@@ -149,7 +149,7 @@ c.read('default_config.cfg')
 
 tmp_folder = os.path.join(os.path.dirname(sys.argv[0]), 'tmp', 'tmp_0')
 
-library = library2
+library = library1
 library_content = os.listdir(library)
 
 configs = os.path.join(os.path.dirname(sys.argv[0]), 'extra_configs')
