@@ -17,9 +17,12 @@ def google_search(query, limit):
     ret_url_list = list()
 
     for tries in range(1, 10):
+        try:
+            if last:
+                 sleep(int(60 - (clock() - last)))
+        except ValueError:
+            pass
 
-        if last:
-            sleep(int(60 - (clock() - last)))
         last = clock()
 
         try:
