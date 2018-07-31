@@ -41,8 +41,8 @@ class ExtraSettings:
         self.naming_scheme = self.config['DOWNLOADING_AND_POSTPROCESSING'].get('naming_scheme')
         self.youtube_dl_arguments = json.loads(self.config['DOWNLOADING_AND_POSTPROCESSING'].get('youtube_dl_arguments'))
 
-        self.disable_play_trailers = self.config['EXTRA_CONFIG'].get('disable_play_trailers', False)
-        self.only_play_trailers = self.config['EXTRA_CONFIG'].get('only_play_trailers', False)
+        self.disable_play_trailers = self.config['EXTRA_CONFIG'].getboolean('disable_play_trailers', False)
+        self.only_play_trailers = self.config['EXTRA_CONFIG'].getboolean('only_play_trailers', False)
         return
 
         # Trailer specific:
