@@ -1,5 +1,6 @@
 from googlesearch import search as google_web_search
 from time import sleep
+from time import clock
 import sys
 
 from urllib.request import HTTPError
@@ -8,14 +9,21 @@ import tools
 from bs4 import BeautifulSoup
 from urllib.request import quote
 
+last = None
+
 
 def google_search(query, limit):
-
+    global last
     ret_url_list = list()
 
     for tries in range(1, 10):
+
+        if last:
+            sleep(int(60 - (clock() - last)))
+        last = clock()
+
         try:
-            for url in google_web_search(query, stop=limit, pause=0.5):
+            for url in google_web_search(query, stop=limit):
                 if 'youtube.com/watch?v=' in url:
                     ret_url_list.append(url.split('&')[0])
 
