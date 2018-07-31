@@ -31,7 +31,7 @@ def download_extra(directory, config, tmp_folder):
         finder.apply_custom_filters()
         finder.order_results()
 
-        if finder.play_trailers and not config.disable_play_trailers:
+        if finder.play_trailers and finder.youtube_videos and not config.disable_play_trailers:
             if 'duration' in finder.youtube_videos[0] and 'duration' in finder.play_trailers[0]:
                 if finder.youtube_videos[0]['duration'] - 23 <= \
                         finder.play_trailers[0]['duration'] <= \
@@ -45,7 +45,7 @@ def download_extra(directory, config, tmp_folder):
             else:
                 return
         if not finder.youtube_videos and finder.play_trailers and not config.disable_play_trailers:
-            finder.youtube_videos = [finder.play_trailers]
+            finder.youtube_videos = finder.play_trailers
 
         for youtube_video in finder.youtube_videos:
             print(youtube_video['webpage_url'] + ' : ' +
