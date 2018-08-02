@@ -7,7 +7,7 @@ from directory import Directory
 from extra_config import ExtraSettings
 import configparser
 import re
-from urllib.error import URLError
+from urllib.error import URLError, HTTPError
 
 
 def download_extra(directory, config, tmp_folder):
@@ -24,7 +24,6 @@ def download_extra(directory, config, tmp_folder):
             print(str(youtube_video['adjusted_rating']))
             print(youtube_video['format'])
             print(str(youtube_video['views_per_day']))
-            print(str(youtube_video['requested_formats'][0]['tbr']))
         print('--------------------------------------------------------------------------------------')
         print(folder)
 
@@ -175,6 +174,8 @@ for folder in library_content:
             if extra_config.config_id in directory.completed_configs and not force:
                 continue
 
+            directory.update_content()
+
             if force:
                 old_record = directory.record
                 directory.record = list()
@@ -189,6 +190,10 @@ for folder in library_content:
         except FileNotFoundError as e:
             print('file not found: ' + str(e.args[0]))
             continue
+
+        except HTTPError:
+            print('You might have been flagged by google search. try again tomorrow.')
+            sys.exit()
 
         except URLError:
             print('you might have lost your internet connections. exiting')

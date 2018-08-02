@@ -416,7 +416,9 @@ class ExtraFinder:
                 if value.lower() == 'false' or value.lower() == 'no':
                     arguments[key] = ''
 
-        for youtube_video in self.youtube_videos[:self.config.videos_to_download]:
+        count = 0
+
+        for youtube_video in self.youtube_videos[:]:
             if not self.config.force:
                 for vid_id in self.directory.record:
                     if vid_id == youtube_video['id']:
@@ -427,6 +429,7 @@ class ExtraFinder:
                     with youtube_dl.YoutubeDL(arguments) as ydl:
                         meta = ydl.extract_info(youtube_video['webpage_url'])
                         downloaded_videos_meta.append(meta)
+                        count += 1
                         break
 
                 except DownloadError as e:
@@ -434,9 +437,12 @@ class ExtraFinder:
                         if str(e).startswith('ERROR: Did not get any data blocks'):
                             return
                         print('failed to download the video.')
-                        raise
+                        break
                     print('failed to download the video. retrying')
                     time.sleep(3)
+
+            if count >= self.config.videos_to_download:
+                break
 
         return downloaded_videos_meta
 

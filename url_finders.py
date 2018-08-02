@@ -35,7 +35,13 @@ def google_search(query, limit):
 
         except HTTPError as e:
             print('google search service unavailable.')
-            break
+
+            if tries > 3:
+                print('Failed to download google search result. Reason: ' + str(e))
+                raise
+
+            print('Failed to download google search result, retrying. Reason: ' + str(e))
+            sleep(1)
 
         except:
             e = sys.exc_info()[0]

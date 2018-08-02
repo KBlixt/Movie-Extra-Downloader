@@ -32,7 +32,6 @@ class Directory(object):
         if full_path is None:
             for key, value in json_dict.items():
                 setattr(self, key, value)
-            self.update_content()
         else:
             self.update_all(full_path=full_path, tmdb_api_key=tmdb_api_key, tmdb_id=tmdb_id)
 

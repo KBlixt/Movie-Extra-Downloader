@@ -66,6 +66,7 @@ def get_clean_string(string):
               .replace("’", '')
               .replace("´", '')
               .replace("`", '')
+              .replace("*", ' ')
               .replace('.', ' ')
               .replace('·', '-')
               .replace(' -', ' ')
