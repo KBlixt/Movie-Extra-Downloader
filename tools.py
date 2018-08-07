@@ -5,18 +5,19 @@ from urllib.request import quote
 import time
 import json
 import hashlib
+import os
 
 
 def hash_file(file_path):
-
-    md5 = hashlib.md5()
-    with open(file_path, 'rb') as file:
-        for i in range(10):
-            data = file.read(2**20)
-            if not data:
-                break
-            md5.update(data)
-    return md5.hexdigest()
+    if not os.path.isdir(file_path):
+        md5 = hashlib.md5()
+        with open(file_path, 'rb') as file:
+            for i in range(10):
+                data = file.read(2**20)
+                if not data:
+                    break
+                md5.update(data)
+        return md5.hexdigest()
 
 
 def get_keyword_list(string):
@@ -26,6 +27,7 @@ def get_keyword_list(string):
               .replace(' in ', ' ')
               .replace(' a ', ' ')
               .replace(' by ', ' ')
+              .replace(' for ', ' ')
               .replace(' is ', ' ')
               .replace(' am ', ' ')
               .replace(' an ', ' ')
