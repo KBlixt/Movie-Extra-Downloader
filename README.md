@@ -2,7 +2,7 @@
 A python 3.6 script that downloads movie extras from youtube.
 
 This script searches for movie extras on youtube and then uses Youtube-DL to download found videos from youtube. 
-Downloaded videos are put into subfolders in the 
+Downloaded videos are put into subfolders in the movie directory.
 
 The script uses folder names as a basis of the search. it can also recognise that the folder name ends with the release
 year and will use it to make better searches. to improve results the script can use a tmdb api key to filter out
@@ -20,6 +20,9 @@ so expect to run it for a day or two the first time you run it
 
 The provided configs that I've included are well tested but they are **not perfect**. if you find a issue with the script 
 finding the wrong movie entirely please let me know.
+
+for now it'll download the video and its thumbnail, name them after the youtube video and move it to a subfolder in the 
+movie directory
 
 
 
@@ -55,7 +58,7 @@ run the script on every folder in the given library.
 
 a few exmples on a ubuntu machine:
 
-####'movie directory example:
+####movie directory example:
 
 python 3 Extra-Movie-Downloader -d /media/plex/Movies/Avatar (2009)
 
