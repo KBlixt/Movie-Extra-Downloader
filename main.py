@@ -47,7 +47,7 @@ def download_extra(directory, config, tmp_folder):
                   youtube_video['format'] +
                   ' (' + str(youtube_video['adjusted_rating']) + ')')
         for youtube_video in finder.play_trailers:
-            print('play trailer: ' + youtube_video['webpage_url'])
+            print('play trailer: ' + youtube_video['webpage_url'] + ' : ' + youtube_video['format'])
         print('--------------------------------------------------------------------------------------')
         print('downloading for: ' + directory.name)
         count = 0

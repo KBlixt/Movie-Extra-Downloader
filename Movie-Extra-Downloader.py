@@ -8,6 +8,8 @@ from urllib.error import URLError, HTTPError
 import configparser
 from _socket import timeout
 import argparse
+import tools
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--directory", help="directory to search extras for")
@@ -24,7 +26,10 @@ def handle_directory(folder):
             try:
                 directory = Directory.load_directory(os.path.join(records, os.path.split(folder)[1]))
             except FileNotFoundError:
-                directory = Directory(folder, c.get('SETTINGS', 'tmdb_api_key'))
+                if has_tmdb_key:
+                    directory = Directory(folder, tmdb_api_key=c.get('SETTINGS', 'tmdb_api_key'))
+                else:
+                    directory = Directory(folder)
 
             extra_config = ExtraSettings(os.path.join(configs, config))
             if extra_config.config_id in directory.completed_configs and not args.force:
@@ -90,6 +95,15 @@ configs = os.path.join(os.path.dirname(sys.argv[0]), 'extra_configs')
 configs_content = os.listdir(configs)
 
 records = os.path.join(os.path.dirname(sys.argv[0]), 'records')
+
+result = tools.get_tmdb_search_data(c.get('SETTINGS', 'tmdb_api_key'), 'star wars')
+if result is None:
+    print('Warning: No working TMDB api key was specified.')
+    time.sleep(10)
+    has_tmdb_key = False
+else:
+    has_tmdb_key = True
+
 
 if args.directory:
     handle_directory(args.directory)

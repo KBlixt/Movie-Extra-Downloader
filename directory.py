@@ -70,10 +70,16 @@ class Directory(object):
             if any(clean_name_tuple[-1] == str(year) for year in range(1896, date.today().year + 2)):
                 self.movie_release_year = int(clean_name_tuple[-1])
                 self.movie_title = ' '.join(clean_name_tuple[:-1])
+                self.movie_original_title = ' '.join(clean_name_tuple[:-1])
 
             else:
                 self.movie_release_year = None
                 self.movie_title = ' '.join(clean_name_tuple)
+                self.movie_original_title = ' '.join(clean_name_tuple)
+
+            self.movie_title_keywords = tools.get_keyword_list(self.movie_title)
+            self.movie_original_title_keywords = tools.get_keyword_list(self.movie_original_title)
+
             return True
 
         def get_info_from_details():
