@@ -38,7 +38,9 @@ this should be easy in linux but it's a bit messier on Mac or Windows.
 you'll need to add a default_config.cfg file into the program folder. there should be a "empty_default_config.cfg".
 simply remove the "empty_" from its name and you'll be good to go.
 
-if you have a TMDB API key and wish to use it. open the default_config.cfg file and add it to the tmdb_api_key field.
+if you have a TMDB API key and wish to use it. open the default_config.cfg file and add it to the tmdb_api_key field. 
+this is highly recomended since it will provide a better result! 
+getting a tmdb api key is really simple and is completed in under 5 minutes. 
 
  
 there should be a folder called "extra_configs" these are the configs that will be used for each movie. each config in 
@@ -58,7 +60,7 @@ run the script on every folder in the given library.
 
 a few exmples on a ubuntu machine:
 
-####movie directory example:
+#### movie directory example:
 
 python 3 Extra-Movie-Downloader -d /media/plex/Movies/Avatar (2009)
 
