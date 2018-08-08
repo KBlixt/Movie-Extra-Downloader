@@ -110,7 +110,6 @@ if args.directory:
 elif args.library:
     handle_library(args.library)
 else:
-    handle_library('/storage/plex/library/Filmer')
     print('please specify a directory or a library to search extras for')
 
 try:
