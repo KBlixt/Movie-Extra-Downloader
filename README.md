@@ -30,6 +30,11 @@ movie directory
 
 it should be dead simple to install. simply clone the repository and install the python3 modules "youtube-dl" and "google"
 
+## modules needed:
+
+- youtube-dl
+- google
+
 if you wish to download 1080p versions then you'll also need to install ffmpeg so that it can be run from the terminal. 
 this should be easy in linux but it's a bit messier on Mac or Windows.
 
