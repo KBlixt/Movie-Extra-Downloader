@@ -62,7 +62,7 @@ a few exmples on a ubuntu machine:
 
 #### movie directory example:
 
-python 3 Extra-Movie-Downloader -d /media/plex/Movies/Avatar (2009)
+python3 Extra-Movie-Downloader -d /media/plex/Movies/Avatar (2009)
 
 #### movie library example:
 
