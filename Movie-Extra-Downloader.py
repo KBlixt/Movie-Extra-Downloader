@@ -20,7 +20,7 @@ args = parser.parse_args()
 
 def handle_directory(folder):
     for config in configs_content:
-        if config.startswith('.'):
+        if config.startswith('.') or config.startswith('_'):
             continue
         try:
             try:
