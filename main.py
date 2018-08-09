@@ -30,8 +30,8 @@ def download_extra(directory, config, tmp_folder):
                         finder.youtube_videos[0]['duration'] + 5:
                     finder.youtube_videos = [finder.play_trailers[0]] + finder.youtube_videos
                     print('picked play trailer.')
-            if len(finder.youtube_videos) < config.break_limit:
-                finder.youtube_videos = [finder.play_trailers[0]] + finder.youtube_videos
+            # if len(finder.youtube_videos) < config.break_limit:
+            #     finder.youtube_videos = [finder.play_trailers[0]] + finder.youtube_videos
 
         if config.only_play_trailers:
             if finder.play_trailers:
