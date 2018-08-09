@@ -111,16 +111,21 @@ class Directory(object):
             if self.movie_release_year is None:
                 movie_data = search_data['results'][0]
 
-            for result in search_data['results']:
-                if str(self.movie_release_year) == result['release_date'][:4] and movie_data is None:
-                    movie_data = result
-                elif movie_backup_data is None:
-                    if result['release_date'][6:8] in ['09', '10', '11', '12'] \
+            for result in search_data['results'][:5]:
+                if movie_data is None:
+                    if str(self.movie_release_year) == result['release_date'][:4]:
+                        movie_data = result
+                    elif result['release_date'][6:8] in ['09', '10', '11', '12'] \
                             and str(self.movie_release_year - 1) == result['release_date'][:4]:
+                        movie_data = result
+                    elif result['release_date'][6:8] in ['01', '02', '03', '04'] \
+                            and str(self.movie_release_year + 1) == result['release_date'][:4]:
+                        movie_data = result
+                elif movie_backup_data is None:
+                    if str(self.movie_release_year - 1) == result['release_date'][:4]:
                         movie_backup_data = result
 
-                    elif result['release_date'][6:8] in ['01', '02', '03'] \
-                            and str(self.movie_release_year + 1 == result['release_date'][:4]):
+                    elif str(self.movie_release_year + 1) == result['release_date'][:4]:
                         movie_backup_data = result
 
             if movie_data is None and movie_backup_data is not None:
