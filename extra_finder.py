@@ -405,6 +405,8 @@ class ExtraFinder:
 
         self.youtube_videos = preferred_videos + not_preferred_channels
 
+        self.play_trailers = sorted(self.play_trailers, key=lambda x: x['view_count'], reverse=True)
+
     def download_videos(self, tmp_file):
 
         downloaded_videos_meta = list()
