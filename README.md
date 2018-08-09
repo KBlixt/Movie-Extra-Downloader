@@ -72,6 +72,10 @@ python3 Extra-Movie-Downloader.py -d /media/plex/Movies/Avatar (2009)
 #### movie library example:
 
 python3 Extra-Movie-Downloader.py -l /media/plex/Movies
+
+## as a costum script for radarr
+
+You'll probably need to write a script yourself that calls this program since the script would be different on different systems. 
  
 
 
