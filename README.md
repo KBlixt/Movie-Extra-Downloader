@@ -67,11 +67,11 @@ a few exmples on a ubuntu machine:
 
 #### movie directory example:
 
-python3 Extra-Movie-Downloader -d /media/plex/Movies/Avatar (2009)
+python3 Extra-Movie-Downloader.py -d /media/plex/Movies/Avatar (2009)
 
 #### movie library example:
 
-python3 Extra-Movie-Downloader -l /media/plex/Movies
+python3 Extra-Movie-Downloader.py -l /media/plex/Movies
  
 
 
