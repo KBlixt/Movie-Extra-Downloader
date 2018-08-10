@@ -17,6 +17,14 @@ parser.add_argument("-l", "--library", help="library of directories to search ex
 parser.add_argument("-f", "--force", action="store_true", help="force scan the directories.")
 args = parser.parse_args()
 
+print('t')
+
+if os.path.split(args.directory)[1] == '':
+    args.directory = os.path.split(args.directory)[0]
+
+if os.path.split(args.library)[1] == '':
+    args.library = os.path.split(args.library)[0]
+
 
 def handle_directory(folder):
     for config in configs_content:
