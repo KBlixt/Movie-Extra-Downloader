@@ -11,6 +11,7 @@ testing.py
 record_data
 *tmp*
 records
+extra_configs/*
 
 
 # Byte-compiled / optimized / DLL files
