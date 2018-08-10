@@ -63,12 +63,12 @@ class ExtraFinder:
 
             youtube_video['resolution_ratio'] = youtube_video['width'] / youtube_video['height']
 
-            if 'resolution' not in youtube_video or not youtube_video['resolution']:
-                resolution = max(int(youtube_video['height']),
-                                 int(youtube_video['width'] / 16 * 9))
-                resolutions = [144, 240, 360, 480, 720, 1080, 1440, 2160]
 
-                youtube_video['resolution'] = resolutions[bisect(resolutions, resolution * 1.2) - 1]
+            resolution = max(int(youtube_video['height']),
+                             int(youtube_video['width'] / 16 * 9))
+            resolutions = [144, 240, 360, 480, 720, 1080, 1440, 2160]
+
+            youtube_video['resolution'] = resolutions[bisect(resolutions, resolution * 1.2) - 1]
 
             if youtube_video['upload_date']:
                 date_str = youtube_video['upload_date']
