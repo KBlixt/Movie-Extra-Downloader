@@ -25,6 +25,7 @@ if args.library and os.path.split(args.library)[1] == '':
 
 
 def handle_directory(folder):
+    print('working on directory: "' + os.path.join('...', os.path.split(folder)[1]) + '"')
     for config in configs_content:
         if config.startswith('.') or config.startswith('_'):
             continue
@@ -40,22 +41,27 @@ def handle_directory(folder):
             extra_config = ExtraSettings(os.path.join(configs, config))
             if extra_config.config_id in directory.completed_configs and not args.force:
                 continue
-            if args.force:
-                skip = False
-                for file in os.listdir(directory.full_path):
-                    if file.lower().endswith('trailer.mp4')\
-                            or file.lower().endswith('trailer.mkv'):
-                        skip = True
-                        break
-                if skip:
-                    continue
-                for file in os.listdir(os.path.join(directory.full_path, 'trailers')):
-                    if file.lower().endswith('.mp4')\
-                            or file.lower().endswith('.mkv'):
-                        skip = True
-                        break
-                if skip:
-                    continue
+
+            skip = False
+            for file in os.listdir(directory.full_path):
+                if file.lower().endswith('trailer.mp4')\
+                        or file.lower().endswith('trailer.mkv'):
+                    skip = True
+                    break
+            if skip:
+                print('movie already have a trailer. skipping.')
+                directory.save_directory(records)
+                continue
+
+            for file in os.listdir(os.path.join(directory.full_path, 'trailers')):
+                if file.lower().endswith('.mp4')\
+                        or file.lower().endswith('.mkv'):
+                    skip = True
+                    break
+            if skip:
+                print('movie already have a trailer. skipping.')
+                directory.save_directory(records)
+                continue
 
             directory.update_content()
 
