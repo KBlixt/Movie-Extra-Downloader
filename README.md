@@ -54,8 +54,8 @@ one type of extra at a time. configs starting with "." or "_" is ignored.
 
 ## Running
 
-the program should now be ready to use. run it with python3.5 or 3.6. the program also expects a movie directory
-or a movie library. 
+the program should now be ready to use. run it with python3.5 or 3.6. 
+the program expects to be given a movie directory or a movie library to work on. 
 giving it a movie directory will only execute the script once on the given directory while giving it a movie library will
 run the script on every folder in the given library.
 
