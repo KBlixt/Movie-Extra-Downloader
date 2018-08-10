@@ -53,16 +53,16 @@ def handle_directory(folder):
                     print('movie already have a trailer. skipping.')
                     directory.save_directory(records)
                     continue
-
-                for file in os.listdir(os.path.join(directory.full_path, 'trailers')):
-                    if file.lower().endswith('.mp4')\
-                            or file.lower().endswith('.mkv'):
-                        skip = True
-                        break
-                if skip:
-                    print('movie already have a trailer. skipping.')
-                    directory.save_directory(records)
-                    continue
+                if os.path.isdir(os.listdir(os.path.join(directory.full_path, 'trailers'))):
+                    for file in os.listdir(os.path.join(directory.full_path, 'trailers')):
+                        if file.lower().endswith('.mp4')\
+                                or file.lower().endswith('.mkv'):
+                            skip = True
+                            break
+                    if skip:
+                        print('movie already have a trailer. skipping.')
+                        directory.save_directory(records)
+                        continue
 
             directory.update_content()
 
