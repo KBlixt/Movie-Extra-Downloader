@@ -47,14 +47,10 @@ if you have a TMDB API key and wish to use it. open the default_config.cfg file 
 this is highly recomended since it will provide a better result! 
 getting a tmdb api key is really simple and is completed in under 5 minutes. 
 
- 
-there should be a folder called "extra_configs" these are the configs that will be used for each movie. each config in 
-this folder represents one extra type. I've included 2 basic configurations: "720p_trailer.cfg" and "_1080p_trailer.cfg".
-every config file in this folder will be used to search for extras. which means that if you have multiple trailer configs in 
-this folder it will look for multiple trailers. any file startinging with either a '.' or a '\_' will however be ignored.
-
-if you've installed ffmpeg and you wish to download 1080p videos simply remove the '_' in front of the 1080p config and 
-add a '\_' in front of the 720p config so that you don't accidentally end up with 2 trailers.
+You'll also need to add extra configs to the "extra_configs" folder. there should be a folder called "default_extra_configs" 
+here you'll find fairly well tested configs that should work well, simply copy any wanted config to the "extra_config" folder. 
+each config in the "extra_config" folder represents one extra type. one config can download multiple videos but can only download for
+one type of extra at a time. configs starting with "." or "_" is ignored.
 
 ## Running
 
