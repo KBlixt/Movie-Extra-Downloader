@@ -178,7 +178,7 @@ class ExtraFinder:
                 buffer = 2
 
             for keyword in self.directory.movie_title_keywords:
-                if keyword.lower() not in youtube_video['title'].lower():
+                if ' ' + keyword.lower() + ' ' not in ' ' + youtube_video['title'].lower() + ' ':
                     buffer -= 1
                     if buffer < 0:
                         break
@@ -189,7 +189,7 @@ class ExtraFinder:
                 buffer = int(len(self.directory.movie_original_title_keywords) / 4 + 0.1)
 
                 for keyword in self.directory.movie_original_title_keywords:
-                    if keyword.lower() not in youtube_video['title'].lower():
+                    if ' ' + keyword.lower() + ' ' not in ' ' + youtube_video['title'].lower() + ' ':
                         buffer -= 1
                         if buffer < 0:
                             break
