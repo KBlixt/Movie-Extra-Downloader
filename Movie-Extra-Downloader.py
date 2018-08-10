@@ -42,26 +42,27 @@ def handle_directory(folder):
             if extra_config.config_id in directory.completed_configs and not args.force:
                 continue
 
-            skip = False
-            for file in os.listdir(directory.full_path):
-                if file.lower().endswith('trailer.mp4')\
-                        or file.lower().endswith('trailer.mkv'):
-                    skip = True
-                    break
-            if skip:
-                print('movie already have a trailer. skipping.')
-                directory.save_directory(records)
-                continue
+            if extra_config.skip_movies_with_existing_trailers:
+                skip = False
+                for file in os.listdir(directory.full_path):
+                    if file.lower().endswith('trailer.mp4')\
+                            or file.lower().endswith('trailer.mkv'):
+                        skip = True
+                        break
+                if skip:
+                    print('movie already have a trailer. skipping.')
+                    directory.save_directory(records)
+                    continue
 
-            for file in os.listdir(os.path.join(directory.full_path, 'trailers')):
-                if file.lower().endswith('.mp4')\
-                        or file.lower().endswith('.mkv'):
-                    skip = True
-                    break
-            if skip:
-                print('movie already have a trailer. skipping.')
-                directory.save_directory(records)
-                continue
+                for file in os.listdir(os.path.join(directory.full_path, 'trailers')):
+                    if file.lower().endswith('.mp4')\
+                            or file.lower().endswith('.mkv'):
+                        skip = True
+                        break
+                if skip:
+                    print('movie already have a trailer. skipping.')
+                    directory.save_directory(records)
+                    continue
 
             directory.update_content()
 
