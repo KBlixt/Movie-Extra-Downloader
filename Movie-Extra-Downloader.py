@@ -82,7 +82,7 @@ def handle_directory(folder):
                 pass
 
         except FileNotFoundError as e:
-            print('file not found: ' + str(e.args[0]))
+            print('file not found: ' + str(e))
             continue
 
         except HTTPError:
