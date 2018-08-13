@@ -103,6 +103,7 @@ def handle_directory(folder):
             sys.exit()
 
         except KeyboardInterrupt:
+            print('exiting! keyboard interrupt.')
             sys.exit()
 
 
