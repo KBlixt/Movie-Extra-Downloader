@@ -81,6 +81,16 @@ def get_clean_string(string):
               .replace(' /', ' ')
               .replace(' & ', ' '))
 
+    ret_tup = ret.split(' ')
+    ret_count = 0
+    for ret_tup_count in range(len(ret_tup)-1):
+        if len(ret_tup[ret_tup_count]) == 1 and len(ret_tup[ret_tup_count + 1]) == 1:
+            ret_count += 1
+            ret = ret[:ret_count] + ret[ret_count:ret_count + 1].replace(' ', '.') + ret[ret_count + 1:]
+            ret_count += 1
+        else:
+            ret_count += len(ret_tup[ret_tup_count]) + 1
+
     return space_cleanup(replace_roman_numbers(ret))
 
 
