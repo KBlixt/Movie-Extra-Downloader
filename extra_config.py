@@ -45,9 +45,10 @@ class ExtraSettings:
         self.only_play_trailers = self.config['EXTRA_CONFIG'].getboolean('only_play_trailers', False)
         self.skip_movies_with_existing_trailers = \
             self.config['EXTRA_CONFIG'].getboolean('skip_movies_with_existing_trailers', False)
-        return
 
-        # Trailer specific:
+        self.skip_movies_with_existing_theme = \
+            self.config['EXTRA_CONFIG'].getboolean('skip_movies_with_existing_theme', False)
+        return
 
     def get_searches(self):
 
