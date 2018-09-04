@@ -88,7 +88,6 @@ def handle_directory(folder):
                         directory.save_directory(records)
                         continue
 
-
             directory.update_content()
 
             if args.force:
