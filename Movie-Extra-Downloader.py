@@ -64,6 +64,30 @@ def handle_directory(folder):
                         directory.save_directory(records)
                         continue
 
+            if extra_config.skip_movies_with_existing_theme:
+                skip = False
+                for file in os.listdir(directory.full_path):
+                    if file.lower().endswith('theme.mp3')\
+                            or file.lower().endswith('theme.wma')\
+                            or file.lower().endswith('theme.flac'):
+                        skip = True
+                        break
+                if skip:
+                    print('movie already have a theme song. skipping.')
+                    directory.save_directory(records)
+                    continue
+                if os.path.isdir(os.path.join(directory.full_path, 'theme-music')):
+                    for file in os.listdir(os.path.join(directory.full_path, 'theme-music')):
+                        if file.lower().endswith('.mp3')\
+                                or file.lower().endswith('.wma')\
+                                or file.lower().endswith('.flac'):
+                            skip = True
+                            break
+                    if skip:
+                        print('movie already have a theme song. skipping.')
+                        directory.save_directory(records)
+                        continue
+
 
             directory.update_content()
 
