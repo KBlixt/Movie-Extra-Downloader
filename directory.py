@@ -110,30 +110,31 @@ class Directory(object):
 
             if self.movie_release_year is None:
                 movie_data = search_data['results'][0]
+            else:
 
-            for result in search_data['results'][:5]:
+                for result in search_data['results'][:5]:
+                    if movie_data is None:
+                        if str(self.movie_release_year) == result['release_date'][:4]:
+                            movie_data = result
+                        elif result['release_date'][6:8] in ['09', '10', '11', '12'] \
+                                and str(self.movie_release_year - 1) == result['release_date'][:4]:
+                            movie_data = result
+                        elif result['release_date'][6:8] in ['01', '02', '03', '04'] \
+                                and str(self.movie_release_year + 1) == result['release_date'][:4]:
+                            movie_data = result
+                    elif movie_backup_data is None:
+                        if str(self.movie_release_year - 1) == result['release_date'][:4]:
+                            movie_backup_data = result
+
+                        elif str(self.movie_release_year + 1) == result['release_date'][:4]:
+                            movie_backup_data = result
+
+                if movie_data is None and movie_backup_data is not None:
+                    print('None of the search results had a correct release year, picking the next best result')
+                    movie_data = movie_backup_data
+
                 if movie_data is None:
-                    if str(self.movie_release_year) == result['release_date'][:4]:
-                        movie_data = result
-                    elif result['release_date'][6:8] in ['09', '10', '11', '12'] \
-                            and str(self.movie_release_year - 1) == result['release_date'][:4]:
-                        movie_data = result
-                    elif result['release_date'][6:8] in ['01', '02', '03', '04'] \
-                            and str(self.movie_release_year + 1) == result['release_date'][:4]:
-                        movie_data = result
-                elif movie_backup_data is None:
-                    if str(self.movie_release_year - 1) == result['release_date'][:4]:
-                        movie_backup_data = result
-
-                    elif str(self.movie_release_year + 1) == result['release_date'][:4]:
-                        movie_backup_data = result
-
-            if movie_data is None and movie_backup_data is not None:
-                print('None of the search results had a correct release year, picking the next best result')
-                movie_data = movie_backup_data
-
-            if movie_data is None:
-                movie_data = search_data['results'][0]
+                    movie_data = search_data['results'][0]
 
             self.tmdb_id = movie_data['id']
             self.movie_title = tools.get_clean_string(movie_data['title'])
