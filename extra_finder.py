@@ -54,10 +54,14 @@ class ExtraFinder:
                 return None
 
             youtube_video['title'] = tools.get_clean_string(youtube_video['title'])
+            if youtube_video['view_count'] is None:
+                youtube_video['view_count'] = (youtube_video['like_count'] + youtube_video['dislike_count']) * 230
 
             if youtube_video['view_count'] < 100:
                 youtube_video['view_count'] = 100
-
+            if youtube_video['average_rating'] is None:
+                youtube_video['average_rating'] = youtube_video['like_count'] / \
+                                                  (youtube_video['like_count'] + youtube_video['dislike_count'])
             youtube_video['adjusted_rating'] = \
                 youtube_video['average_rating'] * (1 - 1 / ((youtube_video['view_count'] / 60) ** 0.5))
 
