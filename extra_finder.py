@@ -61,12 +61,11 @@ class ExtraFinder:
                 youtube_video['view_count'] = 100
             if youtube_video['average_rating'] is None:
                 youtube_video['average_rating'] = youtube_video['like_count'] / \
-                                                  (youtube_video['like_count'] + youtube_video['dislike_count'])
+                                                  (youtube_video['like_count'] + youtube_video['dislike_count'] + 1)
             youtube_video['adjusted_rating'] = \
                 youtube_video['average_rating'] * (1 - 1 / ((youtube_video['view_count'] / 60) ** 0.5))
 
             youtube_video['resolution_ratio'] = youtube_video['width'] / youtube_video['height']
-
 
             resolution = max(int(youtube_video['height']),
                              int(youtube_video['width'] / 16 * 9))
