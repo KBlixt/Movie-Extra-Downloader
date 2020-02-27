@@ -1,6 +1,5 @@
 import os
-import string_tools
-from data_fetchers import get_tmdb_details_data, get_tmdb_search_data
+import tools as tools
 from datetime import date
 import json
 
@@ -31,11 +30,8 @@ class Directory(object):
         ########################################
 
         if full_path is None:
-            if json_dict is not None:
-                for key, value in json_dict.items():
-                    setattr(self, key, value)
-            else:
-                raise ValueError('No directory path provided')
+            for key, value in json_dict.items():
+                setattr(self, key, value)
         else:
             self.update_all(full_path=full_path, tmdb_api_key=tmdb_api_key, tmdb_id=tmdb_id)
 
@@ -62,16 +58,16 @@ class Directory(object):
             if os.path.isdir(os.path.join(self.full_path, file)):
                 sub_content = dict()
                 for sub_file in os.listdir(os.path.join(self.full_path, file)):
-                    sub_content[sub_file] = string_tools.hash_file(os.path.join(self.full_path, file, sub_file))
+                    sub_content[sub_file] = tools.hash_file(os.path.join(self.full_path, file, sub_file))
                 self.subdirectories[file] = sub_content
             else:
-                self.content[file] = string_tools.hash_file(os.path.join(self.full_path, file))
+                self.content[file] = tools.hash_file(os.path.join(self.full_path, file))
 
     def update_movie_info(self, tmdb_api_key=None, tmdb_id=None):
-        def update_info_from_directory():
-            clean_name_tuple = string_tools.get_clean_string(self.name).split(' ')
+        def get_info_from_directory():
+            clean_name_tuple = tools.get_clean_string(self.name).split(' ')
 
-            if any(clean_name_tuple[-1] == str(year) for year in range(1895, date.today().year + 2)):
+            if any(clean_name_tuple[-1] == str(year) for year in range(1896, date.today().year + 2)):
                 self.movie_release_year = int(clean_name_tuple[-1])
                 self.movie_title = ' '.join(clean_name_tuple[:-1])
                 self.movie_original_title = ' '.join(clean_name_tuple[:-1])
@@ -81,19 +77,19 @@ class Directory(object):
                 self.movie_title = ' '.join(clean_name_tuple)
                 self.movie_original_title = ' '.join(clean_name_tuple)
 
-            self.movie_title_keywords = string_tools.get_keyword_list(self.movie_title)
-            self.movie_original_title_keywords = string_tools.get_keyword_list(self.movie_original_title)
+            self.movie_title_keywords = tools.get_keyword_list(self.movie_title)
+            self.movie_original_title_keywords = tools.get_keyword_list(self.movie_original_title)
 
             return True
 
-        def update_info_from_details():
-            details_data = get_tmdb_details_data(tmdb_api_key, tmdb_id)
+        def get_info_from_details():
+            details_data = tools.get_tmdb_details_data(tmdb_api_key, tmdb_id)
             if details_data is not None:
                 self.tmdb_id = details_data['id']
                 self.movie_title = details_data['title']
                 self.movie_original_title = details_data['original_title']
-                self.movie_title_keywords = string_tools.get_keyword_list(details_data['title'])
-                self.movie_original_title_keywords = string_tools.get_keyword_list(details_data['original_title'])
+                self.movie_title_keywords = tools.get_keyword_list(details_data['title'])
+                self.movie_original_title_keywords = tools.get_keyword_list(details_data['original_title'])
 
                 if len(details_data['release_date'][:4]) == 4:
                     self.movie_release_year = int(details_data['release_date'][:4])
@@ -103,8 +99,8 @@ class Directory(object):
             else:
                 return False
 
-        def update_info_from_search():
-            search_data = get_tmdb_search_data(tmdb_api_key, self.movie_title)
+        def get_info_from_search():
+            search_data = tools.get_tmdb_search_data(tmdb_api_key, self.movie_title)
 
             if search_data is None or search_data['total_results'] == 0:
                 return False
@@ -141,10 +137,10 @@ class Directory(object):
                     movie_data = search_data['results'][0]
 
             self.tmdb_id = movie_data['id']
-            self.movie_title = string_tools.get_clean_string(movie_data['title'])
-            self.movie_original_title = string_tools.get_clean_string(movie_data['original_title'])
-            self.movie_title_keywords = string_tools.get_keyword_list(movie_data['title'])
-            self.movie_original_title_keywords = string_tools.get_keyword_list(movie_data['original_title'])
+            self.movie_title = tools.get_clean_string(movie_data['title'])
+            self.movie_original_title = tools.get_clean_string(movie_data['original_title'])
+            self.movie_title_keywords = tools.get_keyword_list(movie_data['title'])
+            self.movie_original_title_keywords = tools.get_keyword_list(movie_data['original_title'])
 
             if len(movie_data['release_date'][:4]) == 4:
                 self.movie_release_year = int(movie_data['release_date'][:4])
@@ -152,20 +148,19 @@ class Directory(object):
                 self.movie_release_year = None
             return True
 
-        if tmdb_api_key is None:
-            return update_info_from_directory()
-
-        if tmdb_id is not None:
-            if update_info_from_details():
-                return True
+        if tmdb_api_key is not None:
+            if tmdb_id is not None:
+                if get_info_from_details():
+                    return True
+                else:
+                    tmdb_id = None
+            if get_info_from_directory():
+                if get_info_from_search():
+                    return True
             else:
-                tmdb_id = None
+                return False
 
-        if update_info_from_directory():
-            update_info_from_search()
-            return True
-        else:
-            return False
+        return get_info_from_directory()
 
     def update_similar_results(self, tmdb_api_key):
 
@@ -216,7 +211,7 @@ class Directory(object):
                 else:
                     return None
 
-            search_data = get_tmdb_search_data(tmdb_api_key, self.movie_title)
+            search_data = tools.get_tmdb_search_data(tmdb_api_key, self.movie_title)
 
             if search_data is None or search_data['total_results'] == 0:
                 return list()
@@ -240,7 +235,7 @@ class Directory(object):
 
             for similar_movie in similar_movies:
 
-                for word in string_tools.get_keyword_list(similar_movie['title']):
+                for word in tools.get_keyword_list(similar_movie['title']):
 
                     if (word.lower() not in self.movie_title.lower()
                             and word.lower() not in self.banned_title_keywords):

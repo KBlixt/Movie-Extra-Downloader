@@ -5,7 +5,7 @@ from pytube import YouTube
 from pytube.exceptions import RegexMatchError
 from old_code.Stream import Stream
 import time
-import string_tools as tools
+import tools as tools
 
 
 class YoutubeVideo(object):

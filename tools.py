@@ -1,3 +1,9 @@
+from _socket import timeout
+from urllib.error import HTTPError, URLError
+from urllib.request import urlopen
+from urllib.request import quote
+import time
+import json
 import hashlib
 import os
 
@@ -43,7 +49,7 @@ def get_keyword_list(string):
               .replace(' 720p ', ' ')
               .replace(' of ', ' '))
 
-    return list(set(ret.strip().split(' ')))
+    return list(set(space_cleanup(ret).split(' ')))
 
 
 def get_clean_string(string):
@@ -85,7 +91,7 @@ def get_clean_string(string):
         else:
             ret_count += len(ret_tup[ret_tup_count]) + 1
 
-    return replace_roman_numbers(ret).strip()
+    return space_cleanup(replace_roman_numbers(ret))
 
 
 def replace_roman_numbers(string):
@@ -105,7 +111,7 @@ def replace_roman_numbers(string):
            .replace(' trailer 2 ', ' trailer ')
            .replace(' trailer 1 ', ' trailer '))
 
-    return ret.strip()
+    return space_cleanup(ret)
 
 
 def make_list_from_string(string, delimiter=',', remove_spaces_next_to_delimiter=True):
@@ -118,6 +124,54 @@ def make_list_from_string(string, delimiter=',', remove_spaces_next_to_delimiter
     return string.split(delimiter)
 
 
+def space_cleanup(string):
+    ret = string
+    while '  ' in ret:
+        ret = ret.replace('  ', ' ')
+    while ret.endswith(' '):
+        ret = ret[:-1]
+    while ret.startswith(' '):
+        ret = ret[1:]
+    return ret
+
+
+def retrieve_web_page(url, page_name='page'):
+
+    response = None
+    print('Downloading ' + page_name + '.')
+
+    for tries in range(1, 10):
+        try:
+            response = urlopen(url, timeout=2)
+            break
+
+        except UnicodeEncodeError as e:
+            print('Failed to download ' + page_name + ' : ' + str(e) + '. Skipping.')
+            break
+
+        except timeout:
+            if tries > 5:
+                print('You might have lost internet connection.')
+                break
+
+            time.sleep(1)
+            print('Failed to download ' + page_name + ' : timed out. Retrying.')
+
+        except HTTPError as e:
+            print('Failed to download ' + page_name + ' : ' + str(e) + '. Skipping.')
+            break
+
+        except URLError:
+            if tries > 3:
+                print('You might have lost internet connection.')
+                raise
+
+            time.sleep(1)
+            print('Failed to download ' + page_name + '. Retrying.')
+
+    return response
+
+
 def apply_query_template(template, keys):
     ret = template
     for key, value in keys.items():
@@ -128,4 +182,35 @@ def apply_query_template(template, keys):
         elif isinstance(value, float):
             ret = ret.replace('{' + key + '}', str(value))
 
-    return ret.strip()
+    return space_cleanup(ret)
+
+
+def get_tmdb_search_data(tmdb_api_key, title):
+    response = retrieve_web_page('https://api.themoviedb.org/3/search/movie'
+                                       '?api_key=' + tmdb_api_key +
+                                       '&language=en-US&query='
+                                       + quote(title.encode('utf-8')) +
+                                       '&page=1&include_adult=false', 'tmdb movie search page')
+    if response is None:
+        return None
+    data = json.loads(response.read().decode('utf-8'))
+    response.close()
+
+    return data
+
+
+def get_tmdb_details_data(tmdb_api_key, tmdb_id):
+    response = retrieve_web_page('https://api.themoviedb.org/3/movie/'
+                                       + str(tmdb_id) +
+                                       '?api_key=' + tmdb_api_key +
+                                       '&language=en-US', 'movie details')
+    if response is None:
+        return None
+    data = json.loads(response.read().decode('utf-8'))
+    response.close()
+
+    return data
+
+
+def get_tmdb_crew_data(tmdb_api_key, tmdb_id):
+    pass
