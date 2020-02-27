@@ -1,12 +1,14 @@
 import os
 from youtube_dl import DownloadError
-import tools as tools
+import string_tools
 import youtube_dl
-import url_finders
+from data_fetchers import youtube_search, google_search, youtube_channel_search
 from bisect import bisect
 from datetime import date
 import time
 import shutil
+
+# todo: move filters to a separate module.
 
 
 class ExtraFinder:
@@ -37,7 +39,7 @@ class ExtraFinder:
 
                     except DownloadError as e:
 
-                        if 'ERROR: Unable to download webpage:' in e.args[0]:
+                        if 'ERROR: Unable to download web page:' in e.args[0]:
 
                             if tries > 3:
                                 print('hey, there: error!!!')
@@ -53,21 +55,16 @@ class ExtraFinder:
             if not youtube_video:
                 return None
 
-            youtube_video['title'] = tools.get_clean_string(youtube_video['title'])
-            if youtube_video['like_count'] is None:
-                youtube_video['like_count'] = 1
-            if youtube_video['dislike_count'] is None:
-                youtube_video['dislike_count'] = 1
-            if youtube_video['view_count'] is None:
-                youtube_video['view_count'] = (youtube_video['like_count'] + youtube_video['dislike_count']) * 230
+            youtube_video['title'] = string_tools.get_clean_string(youtube_video['title'])
 
-            if youtube_video['view_count'] < 100:
-                youtube_video['view_count'] = 100
-            if youtube_video['average_rating'] is None:
-                youtube_video['average_rating'] = youtube_video['like_count'] / \
-                                                  (youtube_video['like_count'] + youtube_video['dislike_count'] + 1)
+            if isinstance(youtube_video['like_count'], int):
+                if youtube_video['like_count'] < 1:
+                    youtube_video['like_count'] = 1
+            else:
+                youtube_video['like_count'] = 1
+
             youtube_video['adjusted_rating'] = \
-                youtube_video['average_rating'] * (1 - 1 / ((youtube_video['view_count'] / 60) ** 0.5))
+                youtube_video['average_rating'] * (1 - 1 / ((youtube_video['like_count'] * 4) ** 0.5))
 
             youtube_video['resolution_ratio'] = youtube_video['width'] / youtube_video['height']
 
@@ -81,7 +78,7 @@ class ExtraFinder:
                 date_str = youtube_video['upload_date']
                 upload_date = date(int(date_str[:4]), int(date_str[4:6]), int(date_str[6:8]))
                 time_delta = date.today() - upload_date
-                youtube_video['views_per_day'] = (youtube_video['view_count'] /
+                youtube_video['likes_per_day'] = (youtube_video['like_count'] /
                                                   (365 + time_delta.total_seconds() / 60 / 60 / 24))
 
             else:
@@ -91,17 +88,17 @@ class ExtraFinder:
         url_list = list()
 
         for search_index, search in self.config.searches.items():
-            query = tools.apply_query_template(search['query'], self.directory.__dict__)
+            query = string_tools.apply_query_template(search['query'], self.directory.__dict__)
             limit = int(search['limit'])
 
             if search['source'] == 'google_search':
-                urls = url_finders.google_search(query, limit)
+                urls = google_search(query, limit)
 
             elif search['source'] == 'youtube_search':
-                urls = url_finders.youtube_search(query, limit)
+                urls = youtube_search(query, limit)
 
             elif search['source'] == 'google_channel_search':
-                urls = url_finders.youtube_channel_search(query, limit)
+                urls = youtube_channel_search(query, limit)
 
             else:
                 print("The search engine \"" + search['source'] + "\" wasn't recognized. Skipping.")
@@ -427,7 +424,7 @@ class ExtraFinder:
 
         count = 0
 
-        for youtube_video in self.youtube_videos[:]:
+        for youtube_video in self.youtube_videos[:self.config.videos_to_download]:
             if not self.config.force:
                 for vid_id in self.directory.record:
                     if vid_id == youtube_video['id']:
@@ -449,9 +446,6 @@ class ExtraFinder:
                         break
                     print('failed to download the video. retrying')
                     time.sleep(3)
-
-            if count >= self.config.videos_to_download:
-                break
 
         return downloaded_videos_meta
 
@@ -516,7 +510,7 @@ class ExtraFinder:
             source_path = os.path.join(tmp_folder, file)
             target_path = os.path.join(self.directory.full_path, self.config.extra_type, file)
 
-            file_hash = tools.hash_file(source_path)
+            file_hash = string_tools.hash_file(source_path)
 
             if any(file_hash == record['hash'] for record in self.directory.record):
                 os.remove(source_path)
