@@ -2,19 +2,17 @@ import configparser
 import codecs
 import json
 
-import tools as tools
+import string_tools
 
 
 class ExtraSettings:
-
-    # todo: make into dictionary.
 
     # todo (0): make sure nothing fails to import.
 
     def __init__(self, config_path):
 
+        self.config = configparser.RawConfigParser()
         with codecs.open(config_path, 'r', 'utf-8') as file:
-            self.config = configparser.RawConfigParser()
             self.config.read_file(file)
 
         self.extra_type = self.config['EXTRA_CONFIG'].get('extra_type')
@@ -24,22 +22,24 @@ class ExtraSettings:
         self.searches = self.get_searches()
 
         self.required_phrases = \
-            tools.make_list_from_string(self.config['FILTERING'].get('required_phrases').replace('\n', ''))
+            string_tools.make_list_from_string(self.config['FILTERING'].get('required_phrases').replace('\n', ''))
         self.banned_phrases = \
-            tools.make_list_from_string(self.config['FILTERING'].get('banned_phrases').replace('\n', ''))
+            string_tools.make_list_from_string(self.config['FILTERING'].get('banned_phrases').replace('\n', ''))
         self.banned_channels = \
-            tools.make_list_from_string(self.config['FILTERING'].get('banned_channels').replace('\n', ''))
+            string_tools.make_list_from_string(self.config['FILTERING'].get('banned_channels').replace('\n', ''))
 
+        self.break_limit = self.config['CUSTOM_FILTERS'].getint('break_limit')
         self.custom_filters = self.get_custom_filters()
-        self.last_resort_policy = self.config['DOWNLOADING_AND_POSTPROCESSING'].get('last_resort_policy')
+        self.last_resort_policy = self.config['CUSTOM_FILTERS'].get('last_resort_policy')
 
         self.priority_order = self.config['PRIORITY_RULES'].get('order')
-        self.preferred_channels = \
-            tools.make_list_from_string(self.config['PRIORITY_RULES'].get('preferred_channels').replace('\n', ''))
+        self.preferred_channels = string_tools.make_list_from_string(
+            self.config['PRIORITY_RULES'].get('preferred_channels').replace('\n', ''))
 
         self.videos_to_download = self.config['DOWNLOADING_AND_POSTPROCESSING'].getint('videos_to_download')
         self.naming_scheme = self.config['DOWNLOADING_AND_POSTPROCESSING'].get('naming_scheme')
-        self.youtube_dl_arguments = json.loads(self.config['DOWNLOADING_AND_POSTPROCESSING'].get('youtube_dl_arguments'))
+        self.youtube_dl_arguments = json.loads(
+            self.config['DOWNLOADING_AND_POSTPROCESSING'].get('youtube_dl_arguments'))
 
         self.disable_play_trailers = self.config['EXTRA_CONFIG'].getboolean('disable_play_trailers', False)
         self.only_play_trailers = self.config['EXTRA_CONFIG'].getboolean('only_play_trailers', False)
@@ -73,11 +73,7 @@ class ExtraSettings:
 
         for option, value in self.config['CUSTOM_FILTERS'].items():
 
-            if option == 'break_limit':
-                self.break_limit = int(value)
-                continue
-            if option == 'last_resort_policy':
-                self.last_resort_policy = value
+            if option == 'break_limit' or option == 'last_resort_policy':
                 continue
 
             try:
