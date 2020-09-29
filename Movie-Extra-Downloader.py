@@ -15,7 +15,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--directory", help="directory to search extras for")
 parser.add_argument("-l", "--library", help="library of directories to search extras for")
 parser.add_argument("-f", "--force", action="store_true", help="force scan the directories.")
+parser.add_argument("-r", "--replace", action="store_true", help="remove and ban the existing extra.")
 args = parser.parse_args()
+
+if args.replace:
+    args.force = True
 
 if args.directory and os.path.split(args.directory)[1] == '':
     args.directory = os.path.split(args.directory)[0]
@@ -42,7 +46,7 @@ def handle_directory(folder):
             if extra_config.config_id in directory.completed_configs and not args.force:
                 continue
 
-            if extra_config.skip_movies_with_existing_trailers:
+            if extra_config.skip_movies_with_existing_trailers and not args.force:
                 skip = False
                 for file in os.listdir(directory.full_path):
                     if file.lower().endswith('trailer.mp4')\
@@ -64,7 +68,7 @@ def handle_directory(folder):
                         directory.save_directory(records)
                         continue
 
-            if extra_config.skip_movies_with_existing_theme:
+            if extra_config.skip_movies_with_existing_theme and not args.force:
                 skip = False
                 for file in os.listdir(directory.full_path):
                     if file.lower().endswith('theme.mp3')\
@@ -93,7 +97,15 @@ def handle_directory(folder):
             if args.force:
                 old_record = directory.record
                 directory.record = list()
+                for record in old_record:
+                    if record != extra_config.extra_type:
+                        directory.record.append(record)
                 extra_config.force = True
+
+            if args.replace:
+                directory.banned_youtube_videos_id.append(directory.trailer_youtube_video_id)
+                shutil.rmtree(os.path.join(directory.full_path, extra_config.extra_type))
+                os.mkdir(os.path.join(directory.full_path, extra_config.extra_type))
 
             if not os.path.isdir(tmp_folder):
                 os.mkdir(tmp_folder)
@@ -132,6 +144,9 @@ def handle_directory(folder):
 
 
 def handle_library(library):
+    if args.replace:
+        print('the replace mode is unable in library mode, please use the directory mode.')
+        return False
     for folder in os.listdir(library):
         if folder.startswith('.'):
             continue
@@ -162,6 +177,7 @@ def handle_library(library):
                 os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder))
             if library == 'testdir':
                 raise
+    return True
 
 
 c = configparser.ConfigParser()
@@ -188,7 +204,7 @@ if args.directory:
 elif args.library:
     handle_library(args.library)
 else:
-    print('please specify a directory or a library to search extras for')
+    print('please specify a directory (-d) or a library (-l) to search extras for')
 
 try:
     shutil.rmtree(tmp_folder)

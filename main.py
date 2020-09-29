@@ -63,10 +63,17 @@ def download_extra(directory, config, tmp_folder):
                 break
             except FileNotFoundError:
                 os.mkdir(tmp_folder)
+        for youtube_id in directory.banned_youtube_videos_id:
+            for youtube_video in finder.youtube_videos:
+                if youtube_id == youtube_video['id']:
+                    finder.youtube_videos.remove(youtube_video)
+                    tmp = None
 
         downloaded_videos_meta = finder.download_videos(tmp_folder)
         if downloaded_videos_meta:
             finder.move_videos(downloaded_videos_meta, tmp_folder)
+            if "trailer" in config.extra_type.lower():
+                directory.trailer_youtube_video_id = downloaded_videos_meta[0]['id']
 
     def process_interviews_config():
         pass

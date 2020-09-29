@@ -141,6 +141,12 @@ class ExtraFinder:
             info = 'Video "' + youtube_video['webpage_url'] + '" was removed. reasons: '
             append_video = True
 
+            for youtube_id in self.directory.banned_youtube_videos_id:
+                if youtube_id == youtube_video['id']:
+                    info += 'banned youtube video, '
+                    append_video = False
+                    break
+
             try:
                 for year in self.directory.banned_years:
                     if str(year) in youtube_video['title'].lower():

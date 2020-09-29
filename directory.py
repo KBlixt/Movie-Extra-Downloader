@@ -21,9 +21,11 @@ class Directory(object):
         self.movie_release_year = None
         self.movie_title_keywords = list()
         self.movie_crew_data = list()
+        self.trailer_youtube_video_id = None
 
         self.banned_title_keywords = list()
         self.banned_years = list()
+        self.banned_youtube_videos_id = list()
 
         self.record = list()
         self.completed_configs = list()
