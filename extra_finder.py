@@ -138,7 +138,8 @@ class ExtraFinder:
                         info += 'containing banned year in tags, '
                         break
             except TypeError:
-                pass
+                append_video = False
+                info += 'unable to confirm year not in (tag:TypeError), '
 
             buffer = 0
             if len(self.directory.banned_title_keywords) > 3:
