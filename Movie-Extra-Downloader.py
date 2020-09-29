@@ -48,7 +48,7 @@ def handle_directory(folder):
             if extra_config.config_id in directory.completed_configs and not args.force:
                 continue
 
-            if extra_config.skip_movies_with_existing_trailers and not args.force:
+            if extra_config.skip_movies_with_existing_trailers:
                 skip = False
                 for file in os.listdir(directory.full_path):
                     if file.lower().endswith('trailer.mp4')\
@@ -70,7 +70,7 @@ def handle_directory(folder):
                         directory.save_directory(records)
                         continue
 
-            if extra_config.skip_movies_with_existing_theme and not args.force:
+            if extra_config.skip_movies_with_existing_theme:
                 skip = False
                 for file in os.listdir(directory.full_path):
                     if file.lower().endswith('theme.mp3')\
