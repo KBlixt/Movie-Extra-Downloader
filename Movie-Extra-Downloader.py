@@ -139,7 +139,7 @@ def handle_library(library):
             continue
         try:
             handle_directory(os.path.join(library, folder))
-        except :
+        except Exception as e:
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
@@ -152,7 +152,11 @@ def handle_library(library):
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
-            os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder))
+            time.sleep(1)
+            if not os.path.isdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder)):
+                os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder))
+            if library == 'testdir':
+                raise
 
 
 c = configparser.ConfigParser()

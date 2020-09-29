@@ -55,28 +55,42 @@ class ExtraFinder:
 
             youtube_video['title'] = tools.get_clean_string(youtube_video['title'])
 
+            if youtube_video['view_count'] is None:
+                youtube_video['view_count'] = 100
+
             if youtube_video['view_count'] < 100:
                 youtube_video['view_count'] = 100
+
+            if youtube_video['average_rating'] is None:
+                youtube_video['average_rating'] = 0
+
+            if youtube_video['view_count'] is None:
+                youtube_video['view_count'] = 0
 
             youtube_video['adjusted_rating'] = \
                 youtube_video['average_rating'] * (1 - 1 / ((youtube_video['view_count'] / 60) ** 0.5))
 
-            youtube_video['resolution_ratio'] = youtube_video['width'] / youtube_video['height']
+            if youtube_video['width'] is None or youtube_video['height'] is None:
+                youtube_video['resolution_ratio'] = 1
+                youtube_video['resolution'] = 144
+            else:
+                youtube_video['resolution_ratio'] = youtube_video['width'] / youtube_video['height']
 
+                resolution = max(int(youtube_video['height']),
+                                 int(youtube_video['width'] / 16 * 9))
+                resolutions = [144, 240, 360, 480, 720, 1080, 1440, 2160]
 
-            resolution = max(int(youtube_video['height']),
-                             int(youtube_video['width'] / 16 * 9))
-            resolutions = [144, 240, 360, 480, 720, 1080, 1440, 2160]
-
-            youtube_video['resolution'] = resolutions[bisect(resolutions, resolution * 1.2) - 1]
+                youtube_video['resolution'] = resolutions[bisect(resolutions, resolution * 1.2) - 1]
 
             if youtube_video['upload_date']:
-                date_str = youtube_video['upload_date']
-                upload_date = date(int(date_str[:4]), int(date_str[4:6]), int(date_str[6:8]))
-                time_delta = date.today() - upload_date
-                youtube_video['views_per_day'] = (youtube_video['view_count'] /
-                                                  (365 + time_delta.total_seconds() / 60 / 60 / 24))
-
+                if youtube_video['upload_date'] is not None:
+                    date_str = youtube_video['upload_date']
+                    upload_date = date(int(date_str[:4]), int(date_str[4:6]), int(date_str[6:8]))
+                    time_delta = date.today() - upload_date
+                    youtube_video['views_per_day'] = (youtube_video['view_count'] /
+                                                      (365 + time_delta.total_seconds() / 60 / 60 / 24))
+                else:
+                    print('no "upload_date"!!!')
             else:
                 print('no "upload_date"!!!')
             return youtube_video
