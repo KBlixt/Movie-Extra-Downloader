@@ -85,17 +85,22 @@ class Directory(object):
         def get_info_from_details():
             details_data = tools.get_tmdb_details_data(tmdb_api_key, tmdb_id)
             if details_data is not None:
-                self.tmdb_id = details_data['id']
-                self.movie_title = details_data['title']
-                self.movie_original_title = details_data['original_title']
-                self.movie_title_keywords = tools.get_keyword_list(details_data['title'])
-                self.movie_original_title_keywords = tools.get_keyword_list(details_data['original_title'])
+                try:
+                    self.tmdb_id = details_data['id']
+                    self.movie_title = details_data['title']
+                    self.movie_original_title = details_data['original_title']
+                    self.movie_title_keywords = tools.get_keyword_list(details_data['title'])
+                    self.movie_original_title_keywords = tools.get_keyword_list(details_data['original_title'])
 
-                if len(details_data['release_date'][:4]) == 4:
-                    self.movie_release_year = int(details_data['release_date'][:4])
-                else:
-                    self.movie_release_year = None
-                return True
+                    if len(details_data['release_date'][:4]) == 4:
+                        self.movie_release_year = int(details_data['release_date'][:4])
+                    else:
+                        self.movie_release_year = None
+                    return True
+                except KeyError as ke:
+                    return False
+                except TypeError as te:
+                    return False
             else:
                 return False
 
@@ -113,6 +118,13 @@ class Directory(object):
             else:
 
                 for result in search_data['results'][:5]:
+                    try:
+                        if result['release_date'] is None:
+                            result['release_date'] = '000000000000000'
+                            continue
+                    except KeyError:
+                        result['release_date'] = '000000000000000'
+                        continue
                     if movie_data is None:
                         if str(self.movie_release_year) == result['release_date'][:4]:
                             movie_data = result
@@ -247,12 +259,13 @@ class Directory(object):
 
                         else:
                             self.banned_title_keywords.append(word)
-
-                if len(similar_movie['release_date'][:4]) == 4 \
-                        and int(similar_movie['release_date'][:4]) not in ([self.movie_release_year] +
-                                                                           self.banned_years):
-                    self.banned_years.append(int(similar_movie['release_date'][:4]))
-
+                try:
+                    if len(similar_movie['release_date'][:4]) == 4 \
+                            and int(similar_movie['release_date'][:4]) not in ([self.movie_release_year] +
+                                                                               self.banned_years):
+                        self.banned_years.append(int(similar_movie['release_date'][:4]))
+                except KeyError as e:
+                    pass
         similar_movies = find_similar_results()
         if similar_movies is not None:
             process_similar_results()
