@@ -42,7 +42,7 @@ def handle_directory(folder):
 
             extra_config = ExtraSettings(os.path.join(configs, config))
 
-            if args.replace and 'trailer' in extra_config.extra_type.lowerI():
+            if args.replace and 'trailer' in extra_config.extra_type.lower():
                 args.force = True
 
             if extra_config.config_id in directory.completed_configs and not args.force:
