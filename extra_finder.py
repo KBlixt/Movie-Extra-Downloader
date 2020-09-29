@@ -127,15 +127,18 @@ class ExtraFinder:
             info = 'Video "' + youtube_video['webpage_url'] + '" was removed. reasons: '
             append_video = True
 
-            for year in self.directory.banned_years:
-                if str(year) in youtube_video['title'].lower():
-                    append_video = False
-                    info += 'containing banned year in title, '
-                    break
-                if any(str(year) in tag.lower() for tag in youtube_video['tags']):
-                    append_video = False
-                    info += 'containing banned year in tags, '
-                    break
+            try:
+                for year in self.directory.banned_years:
+                    if str(year) in youtube_video['title'].lower():
+                        append_video = False
+                        info += 'containing banned year in title, '
+                        break
+                    if any(str(year) in tag.lower() for tag in youtube_video['tags']):
+                        append_video = False
+                        info += 'containing banned year in tags, '
+                        break
+            except TypeError:
+                pass
 
             buffer = 0
             if len(self.directory.banned_title_keywords) > 3:
@@ -388,6 +391,10 @@ class ExtraFinder:
         attribute_tuple = self.config.priority_order.split('_')
         highest = attribute_tuple[0] == 'highest'
         key = '_'.join(attribute_tuple[1:])
+
+        for youtube_video in self.youtube_videos:
+            if youtube_video[key] is None:
+                youtube_video[key] = 0
 
         if highest:
             self.youtube_videos = sorted(self.youtube_videos, key=lambda x: x[key], reverse=True)
