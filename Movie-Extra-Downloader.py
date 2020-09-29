@@ -18,9 +18,6 @@ parser.add_argument("-f", "--force", action="store_true", help="force scan the d
 parser.add_argument("-r", "--replace", action="store_true", help="remove and ban the existing extra.")
 args = parser.parse_args()
 
-if args.replace:
-    args.force = True
-
 if args.directory and os.path.split(args.directory)[1] == '':
     args.directory = os.path.split(args.directory)[0]
 
@@ -31,6 +28,7 @@ if args.library and os.path.split(args.library)[1] == '':
 def handle_directory(folder):
     print('working on directory: "' + os.path.join('...', os.path.split(folder)[1]) + '"')
     for config in configs_content:
+
         if config.startswith('.') or config.startswith('_'):
             continue
         try:
@@ -43,6 +41,10 @@ def handle_directory(folder):
                     directory = Directory(folder)
 
             extra_config = ExtraSettings(os.path.join(configs, config))
+
+            if args.replace and 'trailer' in extra_config.extra_type.lowerI():
+                args.force = True
+
             if extra_config.config_id in directory.completed_configs and not args.force:
                 continue
 
