@@ -12,7 +12,7 @@ record_data
 *tmp*
 records
 extra_configs/*
-
+failed movies/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

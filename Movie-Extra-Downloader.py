@@ -137,7 +137,22 @@ def handle_library(library):
             continue
         if not os.path.isdir(os.path.join(library, folder)):
             continue
-        handle_directory(os.path.join(library, folder))
+        try:
+            handle_directory(os.path.join(library, folder))
+        except :
+            print("----------------------------------------------------------")
+            print("----------------------------------------------------------")
+            print("----------------------------------------------------------")
+            print("----------------------------------------------------------")
+            print("----------------------------------------------------------")
+            print("--------------------AN ERROR OCCURRED---------------------")
+            print("------------------------SKIPPING--------------------------")
+            print("------PLEASE REPORT MOVIE TITLE TO THE GITHUB ISSUES------")
+            print("-----------------THE SCRIPT WILL CONTINUE-----------------")
+            print("----------------------------------------------------------")
+            print("----------------------------------------------------------")
+            print("----------------------------------------------------------")
+            os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed movies", folder))
 
 
 c = configparser.ConfigParser()
