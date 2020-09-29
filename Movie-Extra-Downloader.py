@@ -153,6 +153,9 @@ def handle_library(library):
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
             time.sleep(1)
+
+            if not os.path.isdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies")):
+                os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies"))
             if not os.path.isdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder)):
                 os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder))
             if library == 'testdir':
