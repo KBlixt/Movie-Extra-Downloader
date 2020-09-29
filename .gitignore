@@ -11,8 +11,10 @@ testing.py
 record_data
 *tmp*
 records
-extra_configs/*
-failed movies/*
+extra_configs/**
+failed movies/**
+!extra_configs/.gitkeep
+!failed_movies/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

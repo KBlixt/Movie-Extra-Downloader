@@ -152,7 +152,7 @@ def handle_library(library):
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
-            os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed movies", folder))
+            os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies", folder))
 
 
 c = configparser.ConfigParser()
