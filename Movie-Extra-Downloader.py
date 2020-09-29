@@ -139,6 +139,8 @@ def handle_library(library):
             continue
         try:
             handle_directory(os.path.join(library, folder))
+        except KeyboardInterrupt:
+            raise
         except Exception as e:
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
