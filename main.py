@@ -67,7 +67,6 @@ def download_extra(directory, config, tmp_folder):
             for youtube_video in finder.youtube_videos:
                 if youtube_id == youtube_video['id']:
                     finder.youtube_videos.remove(youtube_video)
-                    tmp = None
 
         downloaded_videos_meta = finder.download_videos(tmp_folder)
         if downloaded_videos_meta:

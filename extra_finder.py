@@ -91,8 +91,10 @@ class ExtraFinder:
                                                       (365 + time_delta.total_seconds() / 60 / 60 / 24))
                 else:
                     print('no "upload_date"!!!')
+                    youtube_video['views_per_day'] = 0
             else:
                 print('no "upload_date"!!!')
+                youtube_video['views_per_day'] = 0
             return youtube_video
 
         url_list = list()
