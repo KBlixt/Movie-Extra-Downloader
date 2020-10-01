@@ -264,7 +264,9 @@ class Directory(object):
                 try:
                     if len(similar_movie['release_date'][:4]) == 4 \
                             and int(similar_movie['release_date'][:4]) not in ([self.movie_release_year] +
-                                                                               self.banned_years):
+                                                                               self.banned_years) \
+                            and similar_movie['release_date'][:4] not in self.movie_title:
+
                         self.banned_years.append(int(similar_movie['release_date'][:4]))
                 except KeyError as e:
                     pass
