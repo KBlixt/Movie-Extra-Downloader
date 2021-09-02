@@ -48,7 +48,7 @@ def handle_directory(folder):
             if extra_config.config_id in directory.completed_configs and not args.force:
                 continue
 
-            if extra_config.skip_movies_with_existing_trailers:
+            if extra_config.skip_movies_with_existing_trailers and not args.replace:
                 skip = False
                 for file in os.listdir(directory.full_path):
                     if file.lower().endswith('trailer.mp4')\
