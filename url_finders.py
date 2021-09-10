@@ -1,6 +1,6 @@
 from googlesearch import search as google_web_search
 from time import sleep
-from time import clock
+from time import perf_counter
 import sys
 
 from urllib.request import HTTPError
@@ -19,11 +19,11 @@ def google_search(query, limit):
     for tries in range(1, 10):
         try:
             if last:
-                 sleep(int(60 - (clock() - last)))
+                 sleep(int(60 - (perf_counter() - last)))
         except ValueError:
             pass
 
-        last = clock()
+        last = perf_counter()
 
         try:
             for url in google_web_search(query, stop=limit):
