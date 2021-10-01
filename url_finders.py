@@ -1,13 +1,13 @@
 from googlesearch import search as google_web_search
 from time import sleep
-from time import clock
+from time import time
 import sys
 
-from urllib.request import HTTPError
+from urllib.error import HTTPError
 
 import tools
 from bs4 import BeautifulSoup
-from urllib.request import quote
+from urllib.parse import quote
 
 last = None
 
@@ -19,11 +19,11 @@ def google_search(query, limit):
     for tries in range(1, 10):
         try:
             if last:
-                 sleep(int(60 - (clock() - last)))
+                sleep(int(60 - (time() - last)))
         except ValueError:
             pass
 
-        last = clock()
+        last = time()
 
         try:
             for url in google_web_search(query, stop=limit):

@@ -1,7 +1,7 @@
 from _socket import timeout
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
-from urllib.request import quote
+from urllib.parse import quote
 import time
 import json
 import hashlib
