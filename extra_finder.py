@@ -176,11 +176,9 @@ class ExtraFinder:
                         info += 'containing banned similar title keywords, '
                         break
 
-            for phrases in self.config.required_phrases:
-                if not any(phrase.lower() in youtube_video['title'].lower() for phrase in phrases.split('|')):
-                    append_video = False
-                    info += 'not containing a required phrase, '
-                    break
+            if not any(phrase.lower() in youtube_video['title'].lower() for phrase in self.config.required_phrases):
+                append_video = False
+                info += 'not containing any required phrase, '
 
             for phrase in self.config.banned_phrases:
                 if phrase.lower() in youtube_video['title'].lower():
