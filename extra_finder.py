@@ -535,7 +535,10 @@ class ExtraFinder:
 
         for file in os.listdir(tmp_folder):
             source_path = os.path.join(tmp_folder, file)
-            target_path = os.path.join(self.directory.full_path, self.config.extra_type, file)
+            if self.config.extra_type == "theme-music":
+                target_path = os.path.join(self.directory.full_path, 'theme.mp3')
+            else:
+                target_path = os.path.join(self.directory.full_path, self.config.extra_type, file)
 
             file_hash = tools.hash_file(source_path)
 
