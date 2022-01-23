@@ -1,3 +1,5 @@
+import traceback
+
 from main import download_extra
 from extra_config import ExtraSettings
 import os
@@ -171,6 +173,7 @@ def handle_library(library):
             print("----------------------------------------------------------")
             print("-------------------- Exception: --------------------------")
             print(e)
+            traceback.print_exc()
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
             time.sleep(1)
