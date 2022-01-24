@@ -173,10 +173,11 @@ def handle_library(library):
             print("----------------------------------------------------------")
             print("-------------------- Exception: --------------------------")
             print(e)
-            traceback.print_exc()
+            print(traceback.format_exc())
             print("----------------------------------------------------------")
             print("----------------------------------------------------------")
             time.sleep(1)
+            exit()
 
             if not os.path.isdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies")):
                 os.mkdir(os.path.join(os.path.dirname(sys.argv[0]), "failed_movies"))
