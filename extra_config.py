@@ -35,9 +35,9 @@ class ExtraSettings:
 
         self.priority_order = self.config['PRIORITY_RULES'].get('order')
         self.preferred_channels = \
-            tools.make_list_from_string(self.config['PRIORITY_RULES'].get('preferred_channels').replace('\n', ''))
+            tools.make_list_from_string(self.config['PRIORITY_RULES'].get('preferred_channels', "").replace('\n', ''))
 
-        self.videos_to_download = self.config['DOWNLOADING_AND_POSTPROCESSING'].getint('videos_to_download')
+        self.videos_to_download = self.config['DOWNLOADING_AND_POSTPROCESSING'].getint('videos_to_download', 1)
         self.naming_scheme = self.config['DOWNLOADING_AND_POSTPROCESSING'].get('naming_scheme')
         self.youtube_dl_arguments = json.loads(self.config['DOWNLOADING_AND_POSTPROCESSING'].get('youtube_dl_arguments'))
 
